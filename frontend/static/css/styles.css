@@ -1,0 +1,250 @@
+/* Variables */
+:root {
+    --maya-blue: #75c4ff;
+    --vista-blue: #99a1ff;
+    --risd-blue: #4452ff;
+    --azure: #e1f4f9;
+    --mint-cream: #f7ffff;
+}
+
+/* Typography */
+@font-face {
+    font-family: 'Brodien Bold';
+    src: url('/static/fonts/Brodien-Bold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Brodien Medium';
+    src: url('/static/fonts/Brodien-Medium.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Gully CD Light';
+    src: url('/static/fonts/GullyCD-Light.woff2') format('woff2');
+}
+
+/* Global Styles */
+body {
+    font-family: 'Gully CD Light', sans-serif;
+    color: #333;
+    line-height: 1.6;
+    background-color: var(--mint-cream);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Brodien Bold', sans-serif;
+}
+
+.subtitle {
+    font-family: 'Brodien Medium', sans-serif;
+}
+
+/* Navigation */
+.navbar {
+    padding: 1rem 0;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand img {
+    max-height: 40px;
+}
+
+.nav-link {
+    font-family: 'Brodien Medium', sans-serif;
+    color: #333 !important;
+    padding: 0.5rem 1rem !important;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--risd-blue) !important;
+}
+
+.nav-link.active {
+    color: var(--risd-blue) !important;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-family: 'Brodien Medium', sans-serif;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background-color: var(--risd-blue);
+    border-color: var(--risd-blue);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--vista-blue);
+    border-color: var(--vista-blue);
+}
+
+.btn-outline-primary {
+    color: var(--risd-blue);
+    border-color: var(--risd-blue);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--risd-blue);
+    border-color: var(--risd-blue);
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, var(--azure), var(--mint-cream));
+    padding: 6rem 0;
+    text-align: center;
+    margin-top: 60px;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    color: var(--risd-blue);
+}
+
+.hero .subtitle {
+    font-size: 1.5rem;
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+/* Sections */
+.section {
+    padding: 5rem 0;
+}
+
+.section h2 {
+    color: var(--risd-blue);
+    margin-bottom: 3rem;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Newsletter Section */
+.bg-light {
+    background-color: var(--mint-cream) !important;
+}
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: white;
+    padding: 4rem 0 2rem;
+    margin-top: var(--spacing-xl);
+}
+
+footer h4 {
+    color: var(--maya-blue);
+    margin-bottom: 1.5rem;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: var(--maya-blue);
+}
+
+.social-links a {
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: var(--maya-blue);
+}
+
+/* Forms */
+.form-control {
+    border-radius: 25px;
+    padding: 0.5rem 1.5rem;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--vista-blue);
+    box-shadow: 0 0 0 0.2rem rgba(153, 161, 255, 0.25);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero .subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .section {
+        padding: 3rem 0;
+    }
+    
+    .navbar {
+        padding: var(--spacing-sm) 0;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 1s ease-out;
+}
+
+/* Utilities */
+.text-primary {
+    color: var(--risd-blue) !important;
+}
+
+.bg-primary {
+    background-color: var(--risd-blue) !important;
+}
+
+/* Layout */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}

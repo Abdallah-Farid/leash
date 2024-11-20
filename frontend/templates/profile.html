@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}'s Profile - Leash{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, var(--azure), var(--mint-cream));
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+    }
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .stats-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+    .stats-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--risd-blue);
+    }
+    .pet-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+    .pet-card:hover {
+        transform: translateY(-5px);
+    }
+    .pet-image {
+        height: 200px;
+        object-fit: cover;
+    }
+    .activity-item {
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        background: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+    }
+    .activity-item:hover {
+        transform: translateX(5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-4 text-center">
+                <img src="{{ user.avatar_url or '/static/images/default-avatar.jpg' }}" alt="{{ user.username }}" class="profile-avatar mb-3">
+                {% if session.get('username') == user.username %}
+                <div>
+                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="fas fa-edit me-1"></i>Edit Profile
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <h1 class="display-4 mb-3">{{ user.username }}</h1>
+                <p class="lead mb-4">{{ user.bio or 'No bio yet.' }}</p>
+                <div class="d-flex align-items-center">
+                    <span class="me-3"><i class="fas fa-map-marker-alt me-1"></i>{{ user.location or 'Location not set' }}</span>
+                    <span class="me-3"><i class="fas fa-calendar me-1"></i>Joined {{ user.created_at|datetime }}</span>
+                    {% if user.website %}
+                    <a href="{{ user.website }}" target="_blank" class="me-3">
+                        <i class="fas fa-globe me-1"></i>Website
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Stats Row -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ stats.pets }}</div>
+                <div class="text-muted">Pets</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ stats.posts }}</div>
+                <div class="text-muted">Posts</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ stats.comments }}</div>
+                <div class="text-muted">Comments</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ stats.likes }}</div>
+                <div class="text-muted">Likes</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Pets Section -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>My Pets</h2>
+                {% if session.get('username') == user.username %}
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPetModal">
+                    <i class="fas fa-plus me-1"></i>Add Pet
+                </button>
+                {% endif %}
+            </div>
+            <div class="row g-4">
+                {% for pet in pets %}
+                <div class="col-md-6">
+                    <div class="card pet-card">
+                        <img src="{{ pet.image_url or '/static/images/default-pet.jpg' }}" class="card-img-top pet-image" alt="{{ pet.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ pet.name }}</h5>
+                            <p class="text-muted mb-2">{{ pet.breed }} • {{ pet.age }} years old</p>
+                            <p class="card-text">{{ pet.bio }}</p>
+                            {% if session.get('username') == user.username %}
+                            <div class="mt-3">
+                                <button class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editPetModal{{ pet.id }}">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deletePetModal{{ pet.id }}">
+                                    <i class="fas fa-trash me-1"></i>Delete
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-lg-4">
+            <h2 class="mb-4">Recent Activity</h2>
+            {% for activity in activities %}
+            <div class="activity-item">
+                {% if activity.type == 'post' %}
+                <i class="fas fa-pen text-primary me-2"></i>
+                <strong>Created a post:</strong>
+                <a href="/blog/post/{{ activity.id }}">{{ activity.title }}</a>
+                {% elif activity.type == 'comment' %}
+                <i class="fas fa-comment text-success me-2"></i>
+                <strong>Commented on:</strong>
+                <a href="/blog/post/{{ activity.post_id }}">{{ activity.post_title }}</a>
+                {% elif activity.type == 'like' %}
+                <i class="fas fa-heart text-danger me-2"></i>
+                <strong>Liked:</strong>
+                <a href="/blog/post/{{ activity.post_id }}">{{ activity.post_title }}</a>
+                {% endif %}
+                <div class="text-muted small mt-1">
+                    {{ activity.created_at|datetime }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+{% if session.get('username') == user.username %}
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/profile/edit" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Profile Picture</label>
+                        <input type="file" name="avatar" class="form-control" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bio</label>
+                        <textarea name="bio" class="form-control" rows="3">{{ user.bio }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" value="{{ user.location }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Website</label>
+                        <input type="url" name="website" class="form-control" value="{{ user.website }}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Pet Modal -->
+<div class="modal fade" id="addPetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Pet</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/pets/add" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Pet Name</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select name="type" class="form-select" required>
+                            <option value="dog">Dog</option>
+                            <option value="cat">Cat</option>
+                            <option value="bird">Bird</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Breed</label>
+                        <input type="text" name="breed" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Age (years)</label>
+                        <input type="number" name="age" class="form-control" min="0" step="0.1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bio</label>
+                        <textarea name="bio" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Picture</label>
+                        <input type="file" name="image" class="form-control" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Pet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+    
+    // Image preview for file inputs
+    document.querySelectorAll('input[type="file"]').forEach(function(input) {
+        input.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                var reader = new FileReader();
+                var preview = this.closest('.modal').querySelector('.image-preview');
+                
+                reader.onload = function(e) {
+                    if (preview) {
+                        preview.src = e.target.result;
+                    }
+                };
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}
